@@ -12,9 +12,9 @@
 <div align="center">
 
 Focus on writing your code, let LLMs write the documentation for you.  
-With just a few keystrokes in your terminal by using OpenAI or 100% local LLMs without any data leaks.
+Generate comprehensive documentation for your code using OpenAI's powerful language models.
 
-Built with [langchain](https://github.com/langchain-ai/langchain), [treesitter](https://github.com/tree-sitter/tree-sitter), [lama.cpp](https://github.com/ggerganov/llama.cpp) and [ollama](https://github.com/jmorganca/ollama)
+Built with [treesitter](https://github.com/tree-sitter/tree-sitter) and OpenAI API
 
 ![doc_comments_ai_demo](https://github.com/fynnfluegge/doc-comments-ai/assets/16321871/664bc581-a2a0-49ea-87f9-343f49f05e97)
 
@@ -25,61 +25,74 @@ Built with [langchain](https://github.com/langchain-ai/langchain), [treesitter](
 - 📝 &nbsp;Generate documentation comment blocks for all methods in a file
   - e.g. Javadoc, JSDoc, Docstring, Rustdoc etc.
 - ✍️ &nbsp; Generate inline documentation comments in method bodies
-- 🌳&nbsp; Treesitter integration
-- 💻&nbsp; Local LLM support
-- 🌐&nbsp; Azure OpenAI support
+- 🌳&nbsp; Treesitter integration for accurate code parsing
+- 🔄&nbsp; Support for various OpenAI models (GPT-3.5, GPT-4, etc.)
 
 > [!NOTE]  
 > Documentation will only be added to files without unstaged changes, so nothing is overwritten.
 
+## 📋 Requirements
+
+- Python >= 3.9
+- OpenAI API Key
+
+## 📦 Installation
+
+Install in an isolated environment with `pipx`:
+```
+pipx install doc-comments-ai
+```
+If you are facing issues using pipx you can also install directly from source through PyPI with:
+```
+pip install doc-comments-ai
+```
+However, it is recommended to use pipx instead to benefit from isolated environments for the dependencies.
+
+## 🔧 Configuration
+
+### Environment Variables
+
+You can configure the application using environment variables. Create a `.env` file in your project root directory based on the provided `.env.example`:
+
+```bash
+# OpenAI API Key (Required)
+OPENAI_API_KEY=your_api_key_here
+
+# OpenAI Model Selection (Optional, defaults to gpt-3.5-turbo)
+# Available options: gpt-3.5-turbo, gpt-4, gpt-3.5-turbo-16k, etc.
+OPENAI_MODEL=gpt-3.5-turbo
+
+# OpenAI API Base URL (Optional, for proxy or custom endpoints)
+# OPENAI_BASE_URL=https://api.openai.com/v1
+```
+
+Or set them directly in your environment:
+
+```bash
+export OPENAI_API_KEY=your_api_key_here
+export OPENAI_MODEL=gpt-4  # Optional
+export OPENAI_BASE_URL=your_custom_url  # Optional
+```
+
 ## 🚀 Usage
 
-Create documentations for any method in a file specified by `<RELATIVE_FILE_PATH>` with GPT-3.5-Turbo model:
-```
+Generate documentation for methods in a file:
+```bash
+# Basic usage with default model (gpt-3.5-turbo)
 aicomment <RELATIVE_FILE_PATH>
-```
 
-Create also documentation comments in the method body:
-```
+# Use a specific model
+aicomment <RELATIVE_FILE_PATH> --model gpt-4
+
+# Add inline comments to method bodies
 aicomment <RELATIVE_FILE_PATH> --inline
-```
-Guided mode, confirm documentation generation for each method:
-```
+
+# Confirm documentation generation for each method
 aicomment <RELATIVE_FILE_PATH> --guided
 ```
 
-Use GPT-4 model:
-```
-aicomment <RELATIVE_FILE_PATH> --gpt4
-```
-
-Use GPT-3.5-Turbo-16k model:
-```
-aicomment <RELATIVE_FILE_PATH> --gpt3_5-16k
-```
-
-Use Azure OpenAI:
-```
-aicomment <RELATIVE_FILE_PATH> --azure-deployment <DEPLOYMENT_NAME>
-```
-
-Use local Llama.cpp:
-```
-aicomment <RELATIVE_FILE_PATH> --local_model <MODEL_PATH>
-```
-Use local Ollama:
-```
-aicomment <RELATIVE_FILE_PATH> --ollama-model <OLLAMA_MODEL>
-```
-
 > [!NOTE]  
-> How to download models from huggingface for local usage see [Local LLM usage](https://github.com/fynnfluegge/doc-comments-ai#3-local-llm-usage)
-
-> [!NOTE]  
-> If very extensive and descriptive documentations are needed, consider using GPT-4/GPT-3.5 Turbo 16k or a similar local model.
-
-> [!IMPORTANT]  
-> The results by using a local LLM will highly be affected by your selected model. To get similar results compared to GPT-3.5/4 you need to select very large models which require a powerful hardware.
+> For extensive and descriptive documentation, consider using GPT-4 or GPT-3.5-turbo-16k models which have larger context windows.
 
 ## 📚 Supported Languages
 
@@ -95,60 +108,8 @@ aicomment <RELATIVE_FILE_PATH> --ollama-model <OLLAMA_MODEL>
 - [x] C#
 - [x] Haskell
 
-## 📋 Requirements
-
-- Python >= 3.9
-
-## 📦 Installation
-
-Install in an isolated environment with `pipx`:
-```
-pipx install doc-comments-ai
-```
-If you are facing issues using pipx uou can also install directly from source through PyPI with
-```
-pip install doc-comments-ai
-```
-However, it is recommended to use pipx instead to benefit from isolated environments for the dependencies.  
-For further help visit the [Troubleshooting](https://github.com/fynnfluegge/doc-comments-ai?tab=readme-ov-file#-troubleshooting) section.
-
-### 1. OpenAI usage
-
-Create your personal OpenAI API key and add it as `$OPENAI_API_KEY` to your environment with:
-
-```bash
-export OPENAI_API_KEY = <YOUR_API_KEY>
-```
-
-### 2. Azure OpenAI usage
-
-Add the following variables to your environment:
-
-```bash
-export AZURE_API_BASE = "https://<your-endpoint.openai.azure.com/"
-export AZURE_API_KEY = <YOUR_AZURE_OPENAI_API_KEY>
-export AZURE_API_VERSION = "2023-05-15"
-```
-
-### 3. Local LLM usage with Llama.cpp
-
-When using a local LLM no API key is required. On first usage of `--local_model` you will be asked for confirmation to intall `llama-cpp-python` with its dependencies.
-The installation process will take care of the hardware-accelerated build tailored to your hardware and OS. For further details see:
-[installation-with-hardware-acceleration](https://github.com/abetlen/llama-cpp-python#installation-with-hardware-acceleration)
-
-To download a model from huggingface for local usage the most convenient way is using the `huggingface-cli`:
-
-```
-huggingface-cli download TheBloke/CodeLlama-13B-Python-GGUF codellama-13b-python.Q5_K_M.gguf
-```
-
-This will download the `codellama-13b-python.Q5_K_M` model to `~/.cache/huggingface/`.
-After the download has finished the absolute path of the `.gguf` file is printed to the console which can be used as the value for `--local_model`.
-
-> [!IMPORTANT]  
-> Since `llama.cpp` is used the model must be in the `.gguf` format.
-
 ## 🛟 Troubleshooting
+
 - #### During installation with `pipx`
   ```
   pip failed to build package: tiktoken
